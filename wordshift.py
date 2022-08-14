@@ -1,10 +1,11 @@
 import random
 
-class game_board:
+class GameBoard:
     """Represents the 3x4 board"""
     def __init__(self):
         self.score = 0
         self.board = ["_"] * 16
+        self.word = ""
         self.dice = [
             "RIFOBX",
             "IFEHEY",
@@ -23,6 +24,9 @@ class game_board:
             "UWILRG",
             "PACEMD"
         ]
+        self.letter_values = {
+
+        }
 
     def print_board(self):
         for i in range(0, len(self.board), 6):
@@ -92,9 +96,48 @@ class game_board:
             else:
                 self.board.insert(23, "  ")
                 self.board.pop(18)
-        # self.print_board()
 
-board_1 = game_board()
+    def word_string(self, letter_selected):
+        """Generates string based on player's letter selections.
+        Cannot select same letter twice
+        Can only select letters in immediate proximity
+        Cannot select empty space"""
+
+
+    def word_check(self, word):
+        """Checks if word is present in dictionary
+        If word not valid, returns invalid message, clears word variable
+        If word is valid, adds to word list, clears word variable"""
+
+class Player:
+    """Complete"""
+    def __init__(self, name):
+        self._name = name
+        self._scores = {}
+        self._games_played = 0
+
+    def get_name(self):
+        """Returns player's name"""
+        return self._name
+
+    def get_scores(self):
+        """Returns dictionary of player's scores"""
+        return self._scores
+
+    def get_games_played(self):
+        """Returns number of games player has played"""
+        return self._games_played
+
+    def set_games_played(self):
+        """Updates number of games played by player by 1"""
+        self._games_played = self._games_played + 1
+
+    def set_scores(self, game_number, game_score):
+        """Updates dictionary of player's scores"""
+        self._scores[game_number] = game_score
+
+
+board_1 = GameBoard()
 board_1.shuffle_board()
 board_1.right_shift(1)
 board_1.left_shift(1)
