@@ -1,11 +1,14 @@
 import random
 
+
 class GameBoard:
     """Represents the 3x4 board"""
     def __init__(self):
         self.score = 0
         self.board = ["_"] * 16
         self.word = ""
+        self.last_index = None
+        self.letter_indexes = []
         self.dice = [
             "RIFOBX",
             "IFEHEY",
@@ -36,7 +39,7 @@ class GameBoard:
         random.shuffle(self.dice)
         # print(self.dice)
         for i in range(0, len(self.dice)):
-            letter = " " + self.dice[i][random.randint(0,5)] + " "
+            letter = " " + self.dice[i][random.randint(0, 5)] + " "
             if letter == " Q ":
                 letter = " Qu"
             self.board[i] = letter
@@ -97,17 +100,35 @@ class GameBoard:
                 self.board.insert(23, "  ")
                 self.board.pop(18)
 
-    def word_string(self, letter_selected):
+    def word_string(self, index_selected):
         """Generates string based on player's letter selections.
         Cannot select same letter twice
         Can only select letters in immediate proximity
         Cannot select empty space"""
-
+        # If letter is first one selected
+        if self.last_index is None:
+            self.word += self.board[index_selected]
+            self.last_index = index_selected
+        else:
+            allowed_indexes = [self.last_index + 1, self.last_index - 1, self.last_index + 5, self.last_index + 6,
+                self.last_index + 7, self.last_index - 5, self.last_index - 6, self.last_index - 7]
+            if index_selected in self.letter_indexes:
+                return "Can't select same letter twice"
+             # If user clicking on one of the blank spaces
+            elif self.board[index_selected] == "   ":
+                return "Can't select blank space"
+            elif index_selected not in allowed_indexes:
+                return "Selection not allowed"
+            else:
+                self.word += self.board[index_selected]
+                self.last_index = index_selected
+                self.letter_indexes.append(index_selected)
 
     def word_check(self, word):
         """Checks if word is present in dictionary
-        If word not valid, returns invalid message, clears word variable
-        If word is valid, adds to word list, clears word variable"""
+        If word not valid, returns invalid message, clears word variable and indexes
+        If word is valid, adds to word list, clears word variable and indexes"""
+
 
 class Player:
     """Complete"""
@@ -143,3 +164,10 @@ board_1.right_shift(1)
 board_1.left_shift(1)
 board_1.left_shift(1)
 board_1.print_board()
+board_1.word_string(2)
+board_1.word_string(3)
+board_1.word_string(8)
+board_1.word_string(9)
+board_1.word_string(14)
+print(board_1.word_string(9))
+print(board_1.word)
