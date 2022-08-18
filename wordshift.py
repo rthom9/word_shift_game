@@ -1,5 +1,7 @@
 import random
 import enchant
+import time
+import sys
 
 dictionary = enchant.Dict("en_US")
 
@@ -165,7 +167,7 @@ class GameBoard:
         """With event listener for enter key or enter button
         Checks if current word_string is present in dictionary
         If word not valid, returns invalid message, clears word variable and indexes
-        If word is valid, adds to word list, scores word, clears word variable and indexes"""
+        If word is valid, adds to word list, scores word, adds to score total, clears word variable and indexes"""
         # score word
         if dictionary.check(self.word):
             word_score = 0
@@ -183,6 +185,7 @@ class GameBoard:
                 word_score += 40
             # Add word to word list
             self.word_list.append(self.word)
+            self.score += word_score
             self.word = ""
             self.last_index = None
         else:
@@ -190,7 +193,18 @@ class GameBoard:
             self.last_index = None
             return "Not a word!"
 
-
+    def timer(self):
+        """Starts with game beginning, when ends, gives total score, adds total score to player's dictionary,
+        increments player's games played"""
+        game_time = 10
+        while game_time:
+            mins, secs = divmod(game_time, 60)
+            timer = '{:02d}:{:02d}'.format(mins, secs)
+            print(timer, end="\r")
+            sys.stdout.flush()
+            time.sleep(1)
+            game_time -= 1
+        print("End Game!")
 
 
 class Player:
@@ -237,3 +251,5 @@ print(board_1.word)
 board_1.backspace()
 print(board_1.word)
 print(board_1.word_check())
+print(dictionary.check("hello"))
+board_1.timer()
