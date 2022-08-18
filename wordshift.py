@@ -1,5 +1,7 @@
 import random
+import enchant
 
+dictionary = enchant.Dict("en_US")
 
 class GameBoard:
     """Represents the 3x4 board"""
@@ -7,6 +9,7 @@ class GameBoard:
         self.score = 0
         self.board = ["_"] * 16
         self.word = ""
+        self.word_list = []
         self.last_index = None
         self.letter_indexes = []
         self.dice = [
@@ -28,7 +31,32 @@ class GameBoard:
             "PACEMD"
         ]
         self.letter_values = {
-
+            "A": 1,
+            "B": 3,
+            "C": 3,
+            "D": 2,
+            "E": 1,
+            "F": 4,
+            "G": 2,
+            "H": 4,
+            "I": 1,
+            "J": 8,
+            "K": 5,
+            "L": 1,
+            "M": 3,
+            "N": 1,
+            "O": 1,
+            "P": 3,
+            "Q": 10,
+            "R": 1,
+            "S": 1,
+            "T": 1,
+            "U": 1,
+            "V": 4,
+            "W": 4,
+            "X": 8,
+            "Y": 4,
+            "Z": 10,
         }
 
     def print_board(self):
@@ -107,7 +135,7 @@ class GameBoard:
         Cannot select empty space"""
         # If letter is first one selected
         if self.last_index is None:
-            self.word += self.board[index_selected]
+            self.word += self.board[index_selected].strip()
             self.last_index = index_selected
         else:
             allowed_indexes = [self.last_index + 1, self.last_index - 1, self.last_index + 5, self.last_index + 6,
@@ -120,14 +148,49 @@ class GameBoard:
             elif index_selected not in allowed_indexes:
                 return "Selection not allowed"
             else:
-                self.word += self.board[index_selected]
+                self.word += self.board[index_selected].strip()
+                # Update last index
                 self.last_index = index_selected
+                # Add index selected to list, future checks if letter selected twice
                 self.letter_indexes.append(index_selected)
 
-    def word_check(self, word):
-        """Checks if word is present in dictionary
+    def backspace(self):
+        """With event listener for backspace key"""
+        if len(self.word) > 0:
+            self.word = self.word[:-1]
+        else:
+            return
+
+    def word_check(self):
+        """With event listener for enter key or enter button
+        Checks if current word_string is present in dictionary
         If word not valid, returns invalid message, clears word variable and indexes
-        If word is valid, adds to word list, clears word variable and indexes"""
+        If word is valid, adds to word list, scores word, clears word variable and indexes"""
+        # score word
+        if dictionary.check(self.word):
+            word_score = 0
+            # Add up letter values in word, will account for Qu scoring
+            for letter in self.word:
+                word_score += self.letter_values[letter]
+            # If word is 5 letters long (10)
+            if len(self.word) >= 5:
+                word_score += 10
+            # If word is 6 letters long (20)
+            if len(self.word) >= 6:
+                word_score += 20
+            # If word is 7 letters long (30 points)
+            if len(self.word) >= 7:
+                word_score += 40
+            # Add word to word list
+            self.word_list.append(self.word)
+            self.word = ""
+            self.last_index = None
+        else:
+            self.word = ""
+            self.last_index = None
+            return "Not a word!"
+
+
 
 
 class Player:
@@ -164,10 +227,13 @@ board_1.right_shift(1)
 board_1.left_shift(1)
 board_1.left_shift(1)
 board_1.print_board()
-board_1.word_string(2)
 board_1.word_string(3)
-board_1.word_string(8)
 board_1.word_string(9)
 board_1.word_string(14)
+board_1.word_string(15)
+board_1.word_string(22)
 print(board_1.word_string(9))
 print(board_1.word)
+board_1.backspace()
+print(board_1.word)
+print(board_1.word_check())
